@@ -8,6 +8,19 @@ $(document).ready(function () {
     $("#loader").hide();
   }
 
+  function downloadJSON(data, filename) {
+    let blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  let allData = [];
+
   function loadPlantApi(page) {
     $.ajax({
       type: "GET",
@@ -17,18 +30,16 @@ $(document).ready(function () {
       },
       success: function (response) {
         hideLoader();
-        let allData = response.data.map((data) => {
-          return data;
-        });
-
-        // Display the data in JSON format
-        $("#plant-container").append(`<pre>${JSON.stringify(allData, null, 2)}</pre>`);
+        allData = allData.concat(response.data);
 
         console.log(response);
 
         // Load next page if there are more pages
         if (page < 337) {
           loadPlantApi(page + 1);
+        } else {
+          // All pages have been loaded, enable the download button
+          $("#download-button").prop('disabled', false);
         }
       },
       error: function (textStatus, errorThrown) {
@@ -38,6 +49,14 @@ $(document).ready(function () {
       }
     });
   }
+
+  // Create a button for downloading the JSON file
+  $("body").append('<button id="download-button" disabled>Download JSON</button>');
+
+  // Attach event listener to the button
+  $("#download-button").click(function() {
+    downloadJSON(allData, 'plant_data.json');
+  });
 
   loadPlantApi(1); // Start loading from page 1
 });
