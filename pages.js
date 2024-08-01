@@ -45,7 +45,7 @@ $(document).ready(function () {
             $("#plant-container").append(plantCard);
           });
           currentPage++;
-          processPage(); // Fetch the next page
+          processPage();
         })
         .fail(function (textStatus, errorThrown) {
           console.error("Error: " + textStatus, errorThrown);
@@ -63,7 +63,7 @@ $(document).ready(function () {
   function fetchPageData(page) {
     return $.ajax({
       type: "GET",
-      url: `https://perenual.com/api/species-list?key=sk-6qY766aabc2dc20ea6394&page=${page}`,
+      url: `https://perenual.com/api/species-list?key=sk-MUcv66aba393b03a26392&page=${page}`,
       beforeSend: function () {
         showLoader();
       }

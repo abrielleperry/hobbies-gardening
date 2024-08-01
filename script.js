@@ -8,32 +8,28 @@ $(document).ready(function () {
     $("#loader").hide();
   }
 
-  function loadPlantApi() {
+  function loadPlantApi(page) {
     $.ajax({
       type: "GET",
-      url: "https://perenual.com/api/species-list?key=sk-6qY766aabc2dc20ea6394",
+      url: `https://perenual.com/api/species-list?key=sk-MUcv66aba393b03a26392&page=${page}`,
       beforeSend: function () {
         showLoader();
       },
       success: function (response) {
         hideLoader();
-        response.data.forEach((data) => {
-          let imageUrl = data.default_image && data.default_image.small_url ? data.default_image.small_url : 'https://via.placeholder.com/150';
-          console.log(imageUrl); // Log the image URL to check if it's correctly assigned
-          let otherNames = data.other_name.length > 0 ? data.other_name.join(', ') : 'N/A';
-          let plantCard = `
-          <div class="plant-card card m-2" style="width: 18rem;">
-            <img src="${imageUrl}" alt="${data.common_name}" class="card-img-top">
-            <div class="card-body">
-              <h4 class="card-title">${data.common_name}</h4>
-              <h5 class="card-subtitle text-body-secondary">Scientific name: ${data.scientific_name.join(', ')}</h5>
-              <h6 class="card-subtitle text-body-secondary">Other names: ${otherNames}</h6>
-            </div>
-          </div>
-          `;
-          $("#plant-container").append(plantCard);
+        let allData = response.data.map((data) => {
+          return data;
         });
+
+        // Display the data in JSON format
+        $("#plant-container").append(`<pre>${JSON.stringify(allData, null, 2)}</pre>`);
+
         console.log(response);
+
+        // Load next page if there are more pages
+        if (page < 337) {
+          loadPlantApi(page + 1);
+        }
       },
       error: function (textStatus, errorThrown) {
         hideLoader();
@@ -43,5 +39,5 @@ $(document).ready(function () {
     });
   }
 
-  loadPlantApi();
+  loadPlantApi(1); // Start loading from page 1
 });
